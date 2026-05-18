@@ -272,7 +272,7 @@ const Hero = () => {
             className="w-[90%] md:w-[75%] lg:w-[85%] h-full relative rounded-t-[10rem] rounded-b-[2rem] md:rounded-t-[15rem] overflow-hidden shadow-2xl z-10 border-[12px] border-[#F5F3EE]"
           >
             <img
-              src="../public/charcter.jpeg"
+              src="https://images.unsplash.com/photo-1593030103066-0093718efeb9?auto=format&fit=crop&q=80&w=1200"
               alt="Tahir Hussain Master Tailor"
               className="w-full h-full object-cover object-top"
             />
