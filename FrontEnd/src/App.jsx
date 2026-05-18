@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import {
   Menu, X, Scissors, MapPin, Phone, Mail,
-  Star, ArrowRight,
-  CheckCircle2, Clock, Award
+  Star, ArrowUpRight, CheckCircle2, Clock, Award
 } from 'lucide-react';
 import Lenis from 'lenis';
 
@@ -15,27 +14,17 @@ const Facebook = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
 );
 
-// Custom Colors
-const colors = {
-  primary: '#0F4A46',
-  secondary: '#1F5C56',
-  sage: '#C7D2C8',
-  cream: '#F5F3EE',
-  gold: '#C8A96B',
-};
-
 const navLinks = [
   { name: 'Home', href: '#home' },
   { name: 'About', href: '#about' },
   { name: 'Portfolio', href: '#portfolio' },
   { name: 'Reviews', href: '#reviews' },
-  { name: 'Contact', href: '#contact' },
 ];
 
 const stats = [
-  { label: 'Years Experience', value: '30+', icon: <Clock size={24} /> },
-  { label: 'Perfect Fits', value: '10k+', icon: <Scissors size={24} /> },
-  { label: 'Awards Won', value: '15', icon: <Award size={24} /> },
+  { label: 'Years Experience', value: '30+', icon: <Clock size={20} /> },
+  { label: 'Perfect Fits', value: '10k+', icon: <Scissors size={20} /> },
+  { label: 'Awards Won', value: '15', icon: <Award size={20} /> },
 ];
 
 const portfolioItems = [
@@ -43,139 +32,133 @@ const portfolioItems = [
     id: 1,
     title: 'Bespoke Navy Suit',
     category: 'Custom Suit',
-    desc: 'Hand-stitched Italian wool with custom silk lining.',
-    img: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=800'
+    img: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=800',
+    colSpan: 'md:col-span-8',
   },
   {
     id: 2,
     title: 'Bridal Elegance',
     category: 'Wedding Gown',
-    desc: 'Intricate lace detailing and perfect silhouette adjustment.',
-    img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=800'
+    img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=800',
+    colSpan: 'md:col-span-4',
   },
   {
     id: 3,
     title: 'Classic Tuxedo',
     category: 'Formal Wear',
-    desc: 'Precision tailoring for black-tie perfection.',
-    img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800'
+    img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800',
+    colSpan: 'md:col-span-4',
   },
   {
     id: 4,
-    title: 'Vintage Blazer Restoration',
-    category: 'Luxury Alteration',
-    desc: 'Restoring life to a classic heritage piece.',
-    img: 'https://images.unsplash.com/photo-1593032465175-481ac7f401a0?auto=format&fit=crop&q=80&w=800'
+    title: 'Vintage Blazer',
+    category: 'Restoration',
+    img: 'https://images.unsplash.com/photo-1593032465175-481ac7f401a0?auto=format&fit=crop&q=80&w=800',
+    colSpan: 'md:col-span-4',
   },
   {
     id: 5,
-    title: 'Summer Linen Collection',
-    category: 'Bespoke Suit',
-    desc: 'Lightweight, perfectly draped for warm climates.',
-    img: 'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    id: 6,
-    title: 'Executive Overcoat',
-    category: 'Winter Wear',
-    desc: 'Cashmere blend overcoat with structured shoulders.',
-    img: 'https://images.unsplash.com/photo-1593032465175-481ac7f401a0?auto=format&fit=crop&q=80&w=800'
+    title: 'Linen Collection',
+    category: 'Summer Wear',
+    img: 'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&q=80&w=800',
+    colSpan: 'md:col-span-4',
   }
 ];
 
 const reviews = [
-  { id: 1, name: 'James Harrington', text: 'The fitting was absolutely perfect. Exceptional craftsmanship and professional service. Michael understood exactly what I needed for my wedding.', rating: 5, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150' },
-  { id: 2, name: 'Sarah Jenkins', text: 'I brought in my grandmother\'s vintage dress. He modernized it while keeping its soul intact. A true master of his craft.', rating: 5, img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150' },
-  { id: 3, name: 'David Chen', text: 'Best bespoke suits in the city. The attention to detail from the initial measurement to the final buttonhole is unmatched.', rating: 5, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150' },
-  { id: 4, name: 'Eleanor Vance', text: 'Impeccable service and unparalleled skill. My evening gowns always fit like a dream after visiting this studio.', rating: 5, img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150' },
+  { id: 1, name: 'James Harrington', text: 'Exceptional craftsmanship. Michael understood exactly what I needed for my wedding, down to the final stitch.', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150' },
+  { id: 2, name: 'Sarah Jenkins', text: 'He modernized my grandmother\'s vintage dress while keeping its soul intact. A true master of his craft.', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150' },
+  { id: 3, name: 'David Chen', text: 'Best bespoke suits in the city. The attention to detail from the initial measurement to the final buttonhole is unmatched.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150' },
+  { id: 4, name: 'Eleanor Vance', text: 'Impeccable service and unparalleled skill. My evening gowns always fit like a dream after visiting this studio.', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150' },
 ];
 
 const GlobalStyles = () => (
   <style dangerouslySetInnerHTML={{
     __html: `
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Great+Vibes&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=Great+Vibes&display=swap');
     
-    /* Using Lenis for smooth scroll, native scroll-behavior smooth can conflict with Lenis */
-    html.lenis { height: auto; }
+    html.lenis, html.lenis body { height: auto; }
     .lenis.lenis-smooth { scroll-behavior: auto !important; }
     .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
     .lenis.lenis-stopped { overflow: hidden; }
-    
-    body { 
-      font-family: 'Inter', sans-serif; 
-      background-color: ${colors.cream};
-      color: ${colors.primary};
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #F5F3EE;
+      color: #0F4A46;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
-    h1, h2, h3, h4, h5, h6, .font-serif {
+    
+    .font-serif {
       font-family: 'Cormorant Garamond', serif;
     }
-    
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: ${colors.cream}; }
-    ::-webkit-scrollbar-thumb { background: ${colors.secondary}; border-radius: 5px; }
-    ::-webkit-scrollbar-thumb:hover { background: ${colors.primary}; }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-    }
-    .glass-dark {
-      background: rgba(15, 74, 70, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(200, 169, 107, 0.2);
+    .font-cursive {
+      font-family: 'Great Vibes', cursive;
     }
 
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #F5F3EE; }
+    ::-webkit-scrollbar-thumb { background: #C8A96B; border-radius: 10px; }
+
+    .glass-nav {
+      background: rgba(245, 243, 238, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(15, 74, 70, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    }
   `}} />
 );
 
-const SectionHeader = ({ title, subtitle, light = false }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 40 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-    className="text-center max-w-3xl mx-auto mb-16 px-4"
-  >
-    <div className="flex items-center justify-center gap-4 mb-4">
-      <div className={`h-[1px] w-12 ${light ? 'bg-[#C8A96B]' : 'bg-[#C8A96B]'}`}></div>
-      <span className={`uppercase tracking-widest text-sm font-semibold ${light ? 'text-[#C8A96B]' : 'text-[#C8A96B]'}`}>
-        Expertise
-      </span>
-      <div className={`h-[1px] w-12 ${light ? 'bg-[#C8A96B]' : 'bg-[#C8A96B]'}`}></div>
-    </div>
-    <h2 className={`text-5xl md:text-6xl font-serif mb-6 ${light ? 'text-[#F5F3EE]' : 'text-[#0F4A46]'}`}>
-      {title}
-    </h2>
-    {subtitle && (
-      <p className={`text-lg md:text-xl font-light ${light ? 'text-[#C7D2C8]' : 'text-gray-600'}`}>
-        {subtitle}
-      </p>
-    )}
-  </motion.div>
-);
+const MagneticButton = ({ children, className, href, onClick }) => {
+  const ref = useRef(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouse = (e) => {
+    const { clientX, clientY } = e;
+    const { height, width, left, top } = ref.current.getBoundingClientRect();
+    const middleX = clientX - (left + width / 2);
+    const middleY = clientY - (top + height / 2);
+    setPosition({ x: middleX * 0.2, y: middleY * 0.2 });
+  };
+
+  const reset = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const Comp = href ? 'a' : 'button';
+
+  return (
+    <Comp
+      href={href}
+      onClick={onClick}
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      className={className}
+    >
+      {children}
+    </Comp>
+  );
+};
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'py-4 glass shadow-sm' : 'py-6 bg-transparent'}`}>
-      <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
-        <a href="#home" className="text-2xl md:text-3xl font-serif font-bold text-[#0F4A46] flex items-center gap-2">
-          <Scissors className="text-[#C8A96B] transition-transform duration-500 hover:rotate-180" size={28} />
-          <span>M. Tahir</span>
+    <div className="fixed top-6 left-0 w-full z-50 px-4 md:px-8 flex justify-center pointer-events-none">
+      <motion.nav
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="glass-nav rounded-full px-6 py-3 md:py-4 flex items-center justify-between gap-8 md:gap-16 pointer-events-auto"
+      >
+        <a href="#home" className="text-xl md:text-2xl font-serif font-semibold text-[#0F4A46] flex items-center gap-2 group">
+          <Scissors className="text-[#C8A96B] group-hover:rotate-180 transition-transform duration-700" size={24} />
+          <span>Tahir Hussain.</span>
         </a>
 
         <div className="hidden md:flex items-center gap-8">
@@ -183,289 +166,251 @@ const Navbar = () => {
             <a
               key={link.name}
               href={link.href}
-              className="text-sm uppercase tracking-wider font-medium text-[#0F4A46] hover:text-[#C8A96B] transition-colors relative group"
+              className="text-xs uppercase tracking-widest font-medium text-[#0F4A46] hover:text-[#C8A96B] transition-colors"
             >
               {link.name}
-              <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-[#C8A96B] transition-all duration-300 group-hover:w-full"></span>
             </a>
           ))}
-          <a href="#contact" className="px-6 py-2.5 bg-[#0F4A46] text-[#F5F3EE] rounded-none hover:bg-[#C8A96B] hover:scale-105 transition-all duration-300 text-sm uppercase tracking-widest font-medium shadow-md hover:shadow-xl">
-            Book Now
-          </a>
         </div>
 
-        <button className="md:hidden text-[#0F4A46]" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        <div className="hidden md:block">
+          <MagneticButton href="#contact" className="bg-[#0F4A46] text-[#F5F3EE] px-6 py-2.5 rounded-full text-xs uppercase tracking-widest font-medium hover:bg-[#C8A96B] transition-colors duration-300">
+            Book Now
+          </MagneticButton>
+        </div>
+
+        <button className="md:hidden text-[#0F4A46]" onClick={() => setIsOpen(true)}>
+          <Menu size={24} />
         </button>
-      </div>
+      </motion.nav>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-white/20 overflow-hidden"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-0 left-4 right-4 bg-[#F5F3EE] rounded-[2rem] shadow-2xl p-8 pointer-events-auto border border-[#0F4A46]/10"
           >
-            <div className="flex flex-col items-center py-8 gap-6">
+            <div className="flex justify-between items-center mb-12">
+              <span className="font-serif text-2xl text-[#0F4A46]">Menu</span>
+              <button onClick={() => setIsOpen(false)} className="text-[#0F4A46] bg-[#C7D2C8]/30 p-2 rounded-full">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="flex flex-col gap-6">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-lg font-serif text-[#0F4A46]"
+                  className="text-4xl font-serif text-[#0F4A46] hover:text-[#C8A96B] transition-colors"
                 >
                   {link.name}
                 </a>
               ))}
-              <a href="#contact" onClick={() => setIsOpen(false)} className="mt-4 px-8 py-3 bg-[#0F4A46] text-[#F5F3EE] text-sm uppercase tracking-widest">
+              <a href="#contact" onClick={() => setIsOpen(false)} className="mt-8 bg-[#0F4A46] text-[#F5F3EE] py-4 rounded-full text-center text-sm uppercase tracking-widest">
                 Book Consultation
               </a>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </div>
   );
 };
 
 const Hero = () => {
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
-  const yParallax = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-  const opacityParallax = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
-  // Reduced wording so it formats perfectly without being too massive
-  const title = "CUSTOM TAILORING & ALTERATIONS";
-  const splitTitle = title.split("").map((char, index) => (
-    <motion.span
-      key={index}
-      className="inline-block"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 + (index * 0.03), ease: [0.16, 1, 0.3, 1] }}
-    >
-      {char === " " ? "\u00A0" : char}
-    </motion.span>
-  ));
-
   return (
-    <section id="home" ref={heroRef} className="relative min-h-screen flex items-center pt-24 overflow-hidden bg-[#F5F3EE]">
-      <div className="absolute top-0 right-0 w-2/3 h-full bg-[#E8E4D9] rounded-bl-[10rem] -z-10 transform translate-x-10 opacity-70"></div>
+    <section id="home" className="relative min-h-[100svh] flex items-center px-4 md:px-8 overflow-hidden bg-[#F5F3EE] pt-32 pb-20 md:py-0">
+      <div className="container mx-auto grid lg:grid-cols-2 gap-16 lg:gap-8 items-center h-full min-h-[80vh]">
 
-      <div className="container mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12 items-center">
-
-        <motion.div style={{ opacity: opacityParallax }} className="z-10 pt-10 lg:pt-0">
+        {/* Left Side: Text */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-start z-20 md:pr-10"
+        >
           <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#C7D2C8]/50 backdrop-blur-md rounded-full mb-8 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-8 bg-[#0F4A46]/5 backdrop-blur-md px-6 py-2.5 rounded-full border border-[#0F4A46]/10 flex items-center gap-3"
           >
-            <span className="w-2 h-2 rounded-full bg-[#C8A96B] animate-pulse"></span>
-            <span className="text-sm font-medium tracking-wider text-[#0F4A46] uppercase">Professional Tailoring Expert</span>
+            <div className="w-2 h-2 rounded-full bg-[#C8A96B] animate-pulse"></div>
+            <span className="text-xs md:text-sm font-medium tracking-[0.2em] text-[#0F4A46] uppercase">Specialist In Uniform Services</span>
           </motion.div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-[#0F4A46] leading-[1.1] mb-6 flex flex-wrap">
-            {splitTitle}
+          <h1 className="font-serif text-[16vw] lg:text-[9vw] leading-[0.85] text-[#0F4A46] uppercase tracking-tighter mb-8 mix-blend-multiply">
+            Tahir<br />Hussain
           </h1>
 
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
-            className="text-lg md:text-xl text-[#1F5C56]/80 font-light max-w-xl mb-10 leading-relaxed"
-          >
-            Crafting perfectly tailored fashion with precision, elegance, and over 30 years of masterful experience.
-          </motion.p>
+          <p className="text-[#0F4A46]/70 text-lg md:text-xl font-light max-w-lg mb-12 leading-relaxed">
+            Elevating professional attire with unparalleled precision. From impeccable bespoke suits to authoritative uniform services, we craft excellence in every stitch.
+          </p>
 
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
-            className="flex flex-wrap gap-4"
-          >
-            <motion.a
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              href="#portfolio"
-              className="px-8 py-4 bg-[#0F4A46] text-[#F5F3EE] uppercase tracking-widest text-sm font-medium flex items-center gap-2 group shadow-lg shadow-[#0F4A46]/30"
-            >
-              View Portfolio
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </motion.a>
-            <motion.a
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              href="#contact"
-              className="px-8 py-4 bg-transparent border-[1.5px] border-[#0F4A46] text-[#0F4A46] uppercase tracking-widest text-sm font-medium hover:bg-[#0F4A46] hover:text-[#F5F3EE] transition-colors duration-300"
-            >
-              Book Consultation
-            </motion.a>
-          </motion.div>
+          <div className="flex flex-wrap gap-4 w-full">
+            <MagneticButton href="#contact" className="bg-[#0F4A46] text-[#F5F3EE] px-8 py-5 rounded-full flex items-center justify-center gap-3 hover:bg-[#C8A96B] transition-all duration-500 w-full sm:w-auto">
+              <span className="text-sm uppercase tracking-widest font-semibold">Book Consultation</span>
+            </MagneticButton>
+            <MagneticButton href="#portfolio" className="bg-transparent border border-[#0F4A46]/20 text-[#0F4A46] px-8 py-5 rounded-full flex items-center justify-center gap-3 hover:bg-[#0F4A46] hover:text-[#F5F3EE] transition-all duration-500 w-full sm:w-auto">
+              <span className="text-sm uppercase tracking-widest font-semibold">View Collection</span>
+              <ArrowUpRight size={18} />
+            </MagneticButton>
+          </div>
         </motion.div>
 
-        <motion.div
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative z-10 h-[60vh] lg:h-[80vh] w-full"
-        >
-          <div className="absolute inset-0 rounded-t-full rounded-bl-full overflow-hidden shadow-2xl bg-black">
-            <div className="w-full h-full bg-[#0F4A46]/10 absolute inset-0 z-10 mix-blend-overlay"></div>
-            <motion.img
-              style={{ y: yParallax }}
-              src="https://images.unsplash.com/photo-1593030103066-0093718efeb9?auto=format&fit=crop&q=80&w=1000"
-              alt="Master Tailor at work"
-              className="w-full h-[120%] object-cover object-top -top-[10%] relative"
-            />
-          </div>
+        {/* Right Side: Image & Floating Boxes */}
+        <div className="relative h-[65vh] lg:h-[85vh] w-full flex items-center justify-center mt-12 lg:mt-0">
 
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
-            className="absolute -bottom-6 -left-6 w-32 h-32 bg-[#C8A96B] rounded-[40%] mix-blend-multiply blur-2xl opacity-60"
-          ></motion.div>
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-            className="absolute top-20 -right-10 w-40 h-40 bg-[#1F5C56] rounded-[30%] mix-blend-multiply blur-3xl opacity-50"
-          ></motion.div>
-
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1, y: [0, -10, 0] }}
-            transition={{
-              scale: { duration: 0.8, delay: 1.5, type: "spring" },
-              y: { repeat: Infinity, duration: 4, ease: "easeInOut", delay: 2 }
-            }}
-            className="absolute top-10 -left-10 glass-dark p-6 rounded-2xl hidden md:flex items-center gap-4 shadow-xl"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="w-[90%] md:w-[75%] lg:w-[85%] h-full relative rounded-t-[10rem] rounded-b-[2rem] md:rounded-t-[15rem] overflow-hidden shadow-2xl z-10 border-[12px] border-[#F5F3EE]"
           >
-            <div className="w-12 h-12 bg-[#C8A96B] rounded-full flex items-center justify-center text-[#0F4A46]">
-              <Scissors size={24} />
+            <img
+              src="https://images.unsplash.com/photo-1593030103066-0093718efeb9?auto=format&fit=crop&q=80&w=1200"
+              alt="Tahir Hussain Master Tailor"
+              className="w-full h-full object-cover object-top"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0F4A46]/60 to-transparent mix-blend-multiply"></div>
+          </motion.div>
+
+          {/* Floating Boxes */}
+          <motion.div
+            animate={{ y: [0, -15, 0] }}
+            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            className="absolute top-10 lg:top-20 left-2 md:left-0 lg:-left-10 bg-[#F5F3EE]/95 backdrop-blur-xl px-4 py-3 md:px-6 md:py-5 rounded-2xl md:rounded-3xl shadow-xl border border-[#0F4A46]/10 z-20 flex items-center gap-3 md:gap-4"
+          >
+            <div className="w-10 h-10 md:w-14 md:h-14 bg-[#0F4A46] rounded-full flex items-center justify-center text-[#C8A96B]">
+              <Clock className="w-5 h-5 md:w-6 md:h-6" />
             </div>
             <div>
-              <p className="text-[#C8A96B] font-bold text-2xl font-serif">30+</p>
-              <p className="text-[#F5F3EE] text-xs uppercase tracking-wider">Years Experience</p>
+              <p className="text-xl md:text-3xl font-serif text-[#0F4A46] leading-none mb-1">30+</p>
+              <p className="text-[10px] md:text-xs uppercase tracking-widest text-[#0F4A46]/70 font-semibold">Years Exp.</p>
             </div>
           </motion.div>
-        </motion.div>
+
+          <motion.div
+            animate={{ y: [0, 15, 0] }}
+            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-16 md:bottom-20 lg:bottom-32 -left-2 md:-left-4 lg:-left-12 bg-[#0F4A46] px-4 py-3 md:px-6 md:py-5 rounded-2xl md:rounded-3xl shadow-xl z-20 flex items-center gap-3 md:gap-4"
+          >
+            <div className="w-10 h-10 md:w-14 md:h-14 bg-[#1F5C56] rounded-full flex items-center justify-center text-[#C8A96B]">
+              <Award className="w-5 h-5 md:w-6 md:h-6" />
+            </div>
+            <div>
+              <p className="text-xl md:text-3xl font-serif text-[#F5F3EE] leading-none mb-1">Awarded</p>
+              <p className="text-[10px] md:text-xs uppercase tracking-widest text-[#C7D2C8] font-semibold">Master Tailor</p>
+            </div>
+          </motion.div>
+
+          <motion.div
+            animate={{ y: [0, -12, 0] }}
+            transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 2 }}
+            className="absolute top-[45%] md:top-1/2 -right-2 md:-right-4 lg:-right-10 bg-[#F5F3EE]/95 backdrop-blur-xl px-4 py-3 md:px-6 md:py-5 rounded-2xl md:rounded-3xl shadow-xl border border-[#0F4A46]/10 z-20 flex items-center gap-3 md:gap-4"
+          >
+            <div className="w-10 h-10 md:w-14 md:h-14 bg-[#C8A96B] rounded-full flex items-center justify-center text-[#0F4A46]">
+              <Scissors className="w-5 h-5 md:w-6 md:h-6" />
+            </div>
+            <div>
+              <p className="text-xl md:text-3xl font-serif text-[#0F4A46] leading-none mb-1">10k+</p>
+              <p className="text-[10px] md:text-xs uppercase tracking-widest text-[#0F4A46]/70 font-semibold">Perfect Fits</p>
+            </div>
+          </motion.div>
+
+        </div>
 
       </div>
-
-      <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ repeat: Infinity, duration: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#0F4A46] hidden md:flex flex-col items-center gap-2"
-      >
-        <span className="text-xs uppercase tracking-widest font-medium opacity-60">Scroll</span>
-        <div className="w-[1px] h-12 bg-[#0F4A46]/30 relative overflow-hidden">
-          <motion.div
-            animate={{ y: ['-100%', '100%'] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-            className="absolute top-0 left-0 w-full h-full bg-[#0F4A46]"
-          />
-        </div>
-      </motion.div>
     </section>
   );
 };
 
 const About = () => {
-  const features = [
-    "Perfect Fitting Guarantee",
-    "Premium Imported Fabrics",
-    "Handcrafted Precision",
-    "Wedding & Formal Wear"
-  ];
-
   return (
-    <section id="about" className="py-24 lg:py-32 bg-[#0F4A46] text-[#F5F3EE] relative overflow-hidden">
-      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#C8A96B 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-
-      <div className="container mx-auto px-6 md:px-12 relative z-10">
-        <SectionHeader
-          title="The Master Tailor"
-          subtitle="Merging traditional craftsmanship with contemporary elegance."
-          light={true}
-        />
-
-        <div className="grid lg:grid-cols-2 gap-16 items-center mt-16">
+    <section id="about" className="py-24 md:py-40 px-4 md:px-8 bg-[#0F4A46] text-[#F5F3EE] rounded-t-[2rem] md:rounded-t-[3rem] -mt-10 relative z-20">
+      <div className="container mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 items-start">
 
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="relative"
+            className="lg:col-span-4 xl:col-span-5 space-y-12 lg:sticky lg:top-32"
           >
-            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl group">
-              <div className="absolute inset-0 bg-[#C8A96B]/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-              <img
-                src="https://images.unsplash.com/photo-1578932750294-f5075e85f44a?auto=format&fit=crop&q=80&w=800"
-                alt="Tailor measuring fabric"
-                className="w-full h-[600px] object-cover scale-105 group-hover:scale-100 transition-transform duration-[1.5s]"
-              />
+            <div className="flex items-center gap-4">
+              <div className="h-[1px] w-12 bg-[#C8A96B]"></div>
+              <span className="uppercase tracking-widest text-xs font-semibold text-[#C8A96B]">Our Philosophy</span>
             </div>
-            <div className="absolute -bottom-10 -right-10 md:right-10 bg-[#F5F3EE] text-[#0F4A46] p-8 rounded-2xl shadow-2xl hidden md:grid grid-cols-2 gap-6 border-b-4 border-[#C8A96B]">
-              {stats.map((stat, idx) => (
-                <div key={idx} className="text-center">
-                  <div className="text-[#C8A96B] flex justify-center mb-2">{stat.icon}</div>
-                  <div className="text-3xl font-serif font-bold">{stat.value}</div>
-                  <div className="text-xs uppercase tracking-wider text-gray-500">{stat.label}</div>
-                </div>
-              ))}
+
+            <h2 className="text-5xl md:text-6xl font-serif leading-tight">
+              Elegance is an <br /><span className="text-[#C8A96B] italic font-light">Attitude</span>.
+            </h2>
+
+            <div className="pt-8 overflow-hidden md:overflow-visible">
+              <div className="font-cursive text-[14vw] sm:text-6xl md:text-7xl text-[#C8A96B] -rotate-3 transform-gpu origin-left inline-block">
+                Tahir Hussain
+              </div>
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-8"
-          >
-            <h3 className="text-3xl md:text-4xl font-serif text-[#C8A96B]">Tahir Hussain</h3>
-            <p className="text-lg text-[#C7D2C8] font-light leading-relaxed">
-              With over three decades of experience apprenticing under Savile Row masters, Tahir brings an unparalleled level of precision and artistry to every garment.
-              <br /><br />
-              We believe that clothing should not just fit your body, but complement your character. Every stitch is a commitment to quality, ensuring that when you wear our creations, you project absolute confidence and timeless style.
-            </p>
+          <div className="lg:col-span-8 xl:col-span-7 flex flex-col gap-16 mt-8 lg:mt-0">
 
-            <div className="grid sm:grid-cols-2 gap-4 pt-6">
-              {features.map((feature, idx) => (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              className="space-y-10"
+            >
+              <p className="text-[#C7D2C8] text-2xl md:text-3xl lg:text-4xl font-serif font-medium leading-normal italic pr-4">
+                "We don't merely measure dimensions; we measure style, personality, and purpose. Every stitch is a commitment to excellence."
+              </p>
+
+              <div className="h-px w-full bg-[#1F5C56]"></div>
+
+              <div className="grid md:grid-cols-2 gap-8 text-[#C7D2C8] text-lg font-light leading-relaxed">
+                <p>
+                  With over three decades of mastery, Tahir brings an unparalleled level of precision and artistry to every garment. Our studio operates on the foundational belief that bespoke tailoring is a deeply personal journey, translating your individual persona into fabric and form.
+                </p>
+                <p>
+                  From hand-selected premium European fabrics to rigorous crafting techniques preserved over generations, we ensure that every creation stands as a testament to timeless elegance, durability, and a fit that feels like a second skin.
+                </p>
+              </div>
+
+              {/* Decorative element replacing the image */}
+              <div className="flex items-center justify-between pt-6 opacity-60">
+                <span className="uppercase tracking-widest text-xs text-[#C8A96B] font-semibold">Est. 1994</span>
+                <div className="flex-1 border-t border-dashed border-[#1F5C56] mx-8"></div>
+                <Scissors size={20} className="text-[#C8A96B]" />
+              </div>
+            </motion.div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {stats.map((stat, idx) => (
                 <motion.div
                   key={idx}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                  className="flex items-center gap-3 bg-[#1F5C56]/50 backdrop-blur-md p-4 rounded-xl border border-[#C7D2C8]/10 hover:border-[#C8A96B]/50 transition-colors"
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 + (idx * 0.1) }}
+                  className="bg-[#1F5C56] p-8 rounded-[2rem] flex flex-col justify-between h-[220px] hover:bg-[#C8A96B] group transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <CheckCircle2 className="text-[#C8A96B]" size={20} />
-                  <span className="text-sm font-medium">{feature}</span>
+                  <div className="text-[#C8A96B] group-hover:text-[#0F4A46] transition-colors">{stat.icon}</div>
+                  <div>
+                    <h4 className="text-4xl font-serif mb-2 group-hover:text-[#0F4A46] transition-colors">{stat.value}</h4>
+                    <p className="text-xs uppercase tracking-widest text-[#C7D2C8] group-hover:text-[#0F4A46]/70 leading-relaxed transition-colors">{stat.label}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="pt-8 flex items-center"
-            >
-              {/* Elegant dynamic signature text using Great Vibes font */}
-              <div
-                className="text-5xl md:text-7xl font-light tracking-wide text-[#C8A96B]"
-                style={{ fontFamily: "'Great Vibes', cursive", transform: 'rotate(-4deg)' }}
-              >
-                Tahir
-              </div>
-            </motion.div>
-          </motion.div>
+          </div>
 
         </div>
       </div>
@@ -475,54 +420,66 @@ const About = () => {
 
 const Portfolio = () => {
   return (
-    <section id="portfolio" className="py-24 lg:py-32 bg-[#F5F3EE]">
-      <div className="container mx-auto px-6 md:px-12">
-        <SectionHeader
-          title="Featured Creations"
-          subtitle="A curated collection of precision-crafted tailoring projects and custom fashion pieces."
-        />
+    <section id="portfolio" className="py-24 md:py-40 px-4 md:px-8 bg-[#F5F3EE]">
+      <div className="container mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-[1px] w-12 bg-[#0F4A46]"></div>
+              <span className="uppercase tracking-widest text-xs font-semibold text-[#0F4A46]">Lookbook</span>
+            </div>
+            <h2 className="text-5xl md:text-7xl font-serif text-[#0F4A46] leading-none">
+              Featured<br />Creations.
+            </h2>
+          </motion.div>
+          <MagneticButton className="hidden md:flex border border-[#0F4A46] px-8 py-4 rounded-full text-[#0F4A46] hover:bg-[#0F4A46] hover:text-[#F5F3EE] transition-colors duration-500 text-xs uppercase tracking-widest">
+            View All Work
+          </MagneticButton>
+        </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
           {portfolioItems.map((item, idx) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative h-[500px] rounded-[2rem] overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-500"
+              initial={{ opacity: 0, y: 70, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1.2, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className={`${item.colSpan} relative h-[400px] md:h-[600px] rounded-[2rem] overflow-hidden group cursor-pointer`}
             >
               <img
                 src={item.img}
                 alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
+                className="w-full h-full object-cover origin-center scale-100 group-hover:scale-110 transition-transform duration-[1.5s] ease-[0.16,1,0.3,1]"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F4A46]/90 via-[#0F4A46]/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-700"></div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F4A46] via-[#0F4A46]/40 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
+              <div className="absolute bottom-0 left-0 w-full p-8 md:p-12 flex flex-col items-start md:translate-y-12 group-hover:translate-y-0 transition-transform duration-700 ease-[0.16,1,0.3,1]">
 
-              <div className="absolute inset-0 p-8 flex flex-col justify-end transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1]">
-                <div className="inline-block px-3 py-1 bg-[#C8A96B] text-[#0F4A46] text-xs font-bold uppercase tracking-wider rounded-full mb-3 self-start shadow-sm">
-                  {item.category}
+                <div className="overflow-hidden mb-4">
+                  <span className="inline-block px-4 py-1.5 bg-[#C8A96B] text-[#0F4A46] font-bold text-[10px] uppercase tracking-widest md:translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1]">
+                    {item.category}
+                  </span>
                 </div>
-                <h3 className="text-2xl lg:text-3xl font-serif text-[#F5F3EE] mb-2">{item.title}</h3>
-                <p className="text-[#C7D2C8] text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2">
-                  {item.desc}
-                </p>
 
-                <div className="w-0 h-[2px] bg-[#C8A96B] mt-4 group-hover:w-full transition-all duration-[1s] ease-out"></div>
+                <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif text-[#F5F3EE] transition-colors duration-500 group-hover:text-[#C8A96B]">
+                  {item.title}
+                </h3>
+
+                <div className="flex items-center gap-4 mt-6 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-150">
+                  <div className="w-12 h-[1px] bg-[#C8A96B]"></div>
+                  <span className="text-[10px] md:text-xs uppercase tracking-widest text-[#C8A96B] font-semibold flex items-center gap-2">
+                    View Details <ArrowUpRight size={14} />
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}
-        </div>
-
-        <div className="text-center mt-20">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-10 py-4 bg-transparent border-[1.5px] border-[#0F4A46] text-[#0F4A46] uppercase tracking-widest text-sm font-medium hover:bg-[#0F4A46] hover:text-[#F5F3EE] transition-colors duration-300"
-          >
-            View Full Gallery
-          </motion.button>
         </div>
       </div>
     </section>
@@ -530,51 +487,39 @@ const Portfolio = () => {
 };
 
 const Testimonials = () => {
-  const scrollReviews = [...reviews, ...reviews];
-
   return (
-    <section id="reviews" className="py-24 lg:py-32 bg-[#C7D2C8] overflow-hidden relative">
-      <SectionHeader
-        title="Client Testimonials"
-        subtitle="Read what our distinguished clients have to say about their custom tailoring experience."
-      />
+    <section id="reviews" className="py-24 md:py-40 bg-[#C7D2C8] overflow-hidden flex flex-col items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center mb-16"
+      >
+        <h2 className="text-5xl md:text-7xl font-serif text-[#0F4A46] mb-4">Client Voices</h2>
+        <p className="text-[#0F4A46]/70 text-lg uppercase tracking-widest font-medium">Stories of Elegance</p>
+      </motion.div>
 
-      <div className="relative mt-16 pb-12 flex">
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#C7D2C8] to-transparent z-10 hidden md:block"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#C7D2C8] to-transparent z-10 hidden md:block"></div>
-
+      {/* Marquee effect */}
+      <div className="relative w-full flex overflow-x-hidden skew-y-[-2deg] bg-[#F5F3EE] py-12 border-y border-[#0F4A46]/10">
         <motion.div
           animate={{ x: ["0%", "-50%"] }}
-          transition={{
-            repeat: Infinity,
-            ease: "linear",
-            duration: 30
-          }}
-          className="flex gap-8 px-4"
-          style={{ width: "max-content" }}
+          transition={{ repeat: Infinity, ease: "linear", duration: 30 }}
+          className="flex whitespace-nowrap gap-8 px-4 w-[max-content]"
         >
-          {scrollReviews.map((review, idx) => (
-            <div
-              key={idx}
-              className="w-[350px] md:w-[450px] bg-[#F5F3EE] p-8 md:p-10 rounded-[2rem] shadow-xl flex-shrink-0 relative group hover:-translate-y-2 transition-transform duration-500"
-            >
-              <div className="absolute -top-6 right-8 text-[#C8A96B] opacity-20 group-hover:scale-110 transition-transform">
-                <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+          {[...reviews, ...reviews, ...reviews].map((review, idx) => (
+            <div key={idx} className="w-[300px] md:w-[450px] inline-flex flex-col whitespace-normal">
+              <div className="flex gap-1 mb-4 text-[#C8A96B]">
+                {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
               </div>
-
-              <div className="flex gap-1 mb-6 text-[#C8A96B]">
-                {[...Array(review.rating)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
-              </div>
-
-              <p className="text-[#0F4A46] font-serif text-xl italic mb-8 relative z-10 leading-relaxed">
+              <p className="text-xl md:text-2xl font-serif italic text-[#0F4A46] mb-8 leading-snug">
                 "{review.text}"
               </p>
-
               <div className="flex items-center gap-4 mt-auto">
-                <img src={review.img} alt={review.name} className="w-12 h-12 rounded-full object-cover border-2 border-[#C8A96B]" />
+                <img src={review.img} className="w-12 h-12 rounded-full object-cover border border-[#C8A96B]" />
                 <div>
-                  <h4 className="font-bold text-[#0F4A46]">{review.name}</h4>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Verified Client</p>
+                  <h4 className="font-semibold text-[#0F4A46] text-sm">{review.name}</h4>
+                  <p className="text-[10px] uppercase tracking-widest text-[#1F5C56]">Verified Client</p>
                 </div>
               </div>
             </div>
@@ -598,146 +543,133 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="bg-[#0F4A46] text-[#F5F3EE] pt-24 lg:pt-32 pb-10 rounded-t-[3rem] -mt-12 relative z-20">
-      <div className="container mx-auto px-6 md:px-12">
-        <div className="grid lg:grid-cols-2 gap-16 mb-24">
+    <section id="contact" className="bg-[#0F4A46] text-[#F5F3EE] pt-24 md:pt-40 pb-12 rounded-t-[2rem] md:rounded-t-[3rem] -mt-10 relative z-20">
+      <div className="container mx-auto px-4 md:px-8">
 
+        <div className="grid md:grid-cols-2 gap-16 lg:gap-24 mb-32">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="text-4xl md:text-5xl font-serif text-[#C8A96B] mb-6">Book Your Fitting</h2>
-            <p className="text-[#C7D2C8] mb-12 font-light max-w-md md:text-lg">
-              Visit our studio for a personal consultation. Let us discuss your requirements and take precise measurements for your next masterpiece.
+            <h2 className="text-5xl md:text-7xl font-serif text-[#C8A96B] mb-8 leading-none">
+              Start Your <br />Journey.
+            </h2>
+            <p className="text-[#C7D2C8] text-lg font-light max-w-md mb-12">
+              Step into our studio and experience the luxury of truly bespoke tailoring. We measure more than just dimensions; we measure style.
             </p>
 
-            <div className="space-y-8">
-              <div className="flex items-start gap-4 group">
-                <div className="p-4 bg-[#1F5C56]/50 rounded-full text-[#C8A96B] group-hover:bg-[#C8A96B] group-hover:text-[#0F4A46] transition-all duration-300 shadow-sm group-hover:shadow-lg">
-                  <MapPin size={24} />
+            <div className="space-y-8 border-t border-[#1F5C56] pt-12">
+              <div className="flex items-center gap-6 group cursor-pointer">
+                <div className="w-14 h-14 rounded-full border border-[#C8A96B]/30 flex items-center justify-center text-[#C8A96B] group-hover:bg-[#C8A96B] group-hover:text-[#0F4A46] transition-all duration-500">
+                  <MapPin size={20} />
                 </div>
                 <div>
-                  <h4 className="text-lg font-serif font-bold mb-1 group-hover:text-[#C8A96B] transition-colors">Studio Location</h4>
-                  <p className="text-[#C7D2C8] text-sm">124 Savile Row Avenue<br />Fashion District, NY 10012</p>
+                  <h4 className="text-xl font-serif mb-1">New York Studio</h4>
+                  <p className="text-[#C7D2C8] text-sm">124 Savile Row Ave, NY 10012</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 group">
-                <div className="p-4 bg-[#1F5C56]/50 rounded-full text-[#C8A96B] group-hover:bg-[#C8A96B] group-hover:text-[#0F4A46] transition-all duration-300 shadow-sm group-hover:shadow-lg">
-                  <Phone size={24} />
+              <div className="flex items-center gap-6 group cursor-pointer">
+                <div className="w-14 h-14 rounded-full border border-[#C8A96B]/30 flex items-center justify-center text-[#C8A96B] group-hover:bg-[#C8A96B] group-hover:text-[#0F4A46] transition-all duration-500">
+                  <Phone size={20} />
                 </div>
                 <div>
-                  <h4 className="text-lg font-serif font-bold mb-1 group-hover:text-[#C8A96B] transition-colors">Call Us</h4>
-                  <p className="text-[#C7D2C8] text-sm">+1 (555) 123-4567<br />Mon-Sat: 9am - 7pm</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 group">
-                <div className="p-4 bg-[#1F5C56]/50 rounded-full text-[#C8A96B] group-hover:bg-[#C8A96B] group-hover:text-[#0F4A46] transition-all duration-300 shadow-sm group-hover:shadow-lg">
-                  <Mail size={24} />
-                </div>
-                <div>
-                  <h4 className="text-lg font-serif font-bold mb-1 group-hover:text-[#C8A96B] transition-colors">Email</h4>
-                  <p className="text-[#C7D2C8] text-sm">bookings@mandersontailors.com</p>
+                  <h4 className="text-xl font-serif mb-1">Direct Line</h4>
+                  <p className="text-[#C7D2C8] text-sm">+1 (555) 123-4567</p>
                 </div>
               </div>
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="bg-[#F5F3EE] p-8 md:p-10 lg:p-12 rounded-[2rem] shadow-2xl text-[#0F4A46]"
+            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-[#1F5C56] p-8 md:p-12 rounded-[2rem]"
           >
-            <h3 className="text-3xl font-serif font-bold mb-8">Send a Message</h3>
-
             {formState === 'success' ? (
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="h-full flex flex-col items-center justify-center text-center py-12"
-              >
-                <motion.div
-                  initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}
-                  className="w-20 h-20 bg-[#0F4A46] text-[#C8A96B] rounded-full flex items-center justify-center mb-6 shadow-xl"
-                >
-                  <CheckCircle2 size={40} />
-                </motion.div>
-                <h4 className="text-3xl font-serif font-bold mb-3">Message Sent!</h4>
-                <p className="text-gray-600">We will get back to you within 24 hours to confirm your consultation.</p>
-              </motion.div>
+              <div className="h-full flex flex-col items-center justify-center text-center py-20">
+                <div className="w-24 h-24 bg-[#0F4A46] text-[#C8A96B] rounded-full flex items-center justify-center mb-6">
+                  <CheckCircle2 size={48} />
+                </div>
+                <h4 className="text-4xl font-serif mb-4 text-[#F5F3EE]">Request Received</h4>
+                <p className="text-[#C7D2C8]">Our master tailor will contact you shortly.</p>
+              </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div>
-                  <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#1F5C56]">Full Name</label>
-                  <input required type="text" className="w-full bg-transparent border-b-2 border-[#1F5C56]/20 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-gray-400" placeholder="John Doe" />
-                </div>
-                <div className="grid grid-cols-2 gap-8">
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#1F5C56]">Email</label>
-                    <input required type="email" className="w-full bg-transparent border-b-2 border-[#1F5C56]/20 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-gray-400" placeholder="john@example.com" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#1F5C56]">Service</label>
-                    <select className="w-full bg-transparent border-b-2 border-[#1F5C56]/20 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors text-gray-700">
-                      <option>Bespoke Suit</option>
-                      <option>Alterations</option>
-                      <option>Wedding Wear</option>
-                      <option>Other</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#1F5C56]">Message Details</label>
-                  <textarea required rows="4" className="w-full bg-transparent border-b-2 border-[#1F5C56]/20 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors resize-none placeholder:text-gray-400" placeholder="Tell us about your requirements..."></textarea>
+              <form onSubmit={handleSubmit} className="flex flex-col h-full justify-between gap-8">
+                <div className="space-y-8">
+                  <input required type="text" className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-4 text-lg focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-[#C7D2C8]/50" placeholder="Your Name" />
+                  <input required type="email" className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-4 text-lg focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-[#C7D2C8]/50" placeholder="Email Address" />
+                  <select className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-4 text-lg focus:outline-none focus:border-[#C8A96B] transition-colors text-[#F5F3EE]/80 appearance-none">
+                    <option className="bg-[#0F4A46]">Bespoke Suit</option>
+                    <option className="bg-[#0F4A46]">Wedding Attire</option>
+                    <option className="bg-[#0F4A46]">Alterations</option>
+                  </select>
                 </div>
                 <button
                   disabled={formState === 'submitting'}
-                  type="submit"
-                  className="w-full py-5 mt-4 bg-[#0F4A46] text-[#C8A96B] uppercase tracking-widest text-sm font-bold hover:bg-[#1F5C56] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center disabled:opacity-70 rounded-sm"
+                  className="w-full py-6 bg-[#C8A96B] text-[#0F4A46] text-sm uppercase tracking-widest font-bold hover:bg-[#F5F3EE] transition-colors duration-500 rounded-xl"
                 >
-                  {formState === 'submitting' ? 'Sending...' : 'Send Message'}
+                  {formState === 'submitting' ? 'Processing...' : 'Submit Request'}
                 </button>
               </form>
             )}
           </motion.div>
         </div>
 
-        <div className="border-t border-[#1F5C56] pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-2xl font-serif font-bold text-[#C8A96B] flex items-center gap-2">
-            <Scissors size={24} />
-            <span>M. Tahir.</span>
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center pt-24 border-t border-[#1F5C56]"
+        >
+          <h2 className="text-[12vw] font-serif font-bold text-[#F5F3EE]/5 tracking-tighter leading-none mb-[-4vw]">
+            TAHIR HUSSAIN
+          </h2>
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 mt-12 text-[#C7D2C8] text-xs uppercase tracking-widest">
+            <p>&copy; {new Date().getFullYear()} TH STUDIOS.</p>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-[#C8A96B] transition-colors">Instagram</a>
+              <a href="#" className="hover:text-[#C8A96B] transition-colors">Facebook</a>
+            </div>
+            <p>Made With Perfection</p>
           </div>
-          <p className="text-[#C7D2C8] text-sm text-center md:text-left">
-            &copy; {new Date().getFullYear()} Michael Anderson Tailoring. All rights reserved.
-          </p>
-          <div className="flex gap-4 text-[#C7D2C8]">
-            <a href="#" className="p-2 hover:bg-[#1F5C56] rounded-full hover:text-[#C8A96B] transition-all"><Instagram size={20} /></a>
-            <a href="#" className="p-2 hover:bg-[#1F5C56] rounded-full hover:text-[#C8A96B] transition-all"><Facebook size={20} /></a>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
-export default function App() {
+const ScrollProgress = () => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
-  // Smooth scroll using Lenis
+  return (
+    <motion.div
+      className="fixed top-0 left-0 right-0 h-[3px] bg-[#C8A96B] origin-left z-[100]"
+      style={{ scaleX }}
+    />
+  );
+};
+
+export default function App() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.5,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       direction: 'vertical',
       gestureDirection: 'vertical',
       smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-      infinite: false,
+      mouseMultiplier: 1.2,
     });
 
     function raf(time) {
@@ -746,22 +678,20 @@ export default function App() {
     }
     requestAnimationFrame(raf);
 
-    // Provide lenis instances to internal links for smooth anchor scrolling
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        lenis.scrollTo(this.getAttribute('href'));
+        lenis.scrollTo(this.getAttribute('href'), { offset: -100 });
       });
     });
 
-    return () => {
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, []);
 
   return (
-    <div className="bg-[#F5F3EE] min-h-screen font-sans selection:bg-[#C8A96B] selection:text-[#0F4A46]">
+    <div className="bg-[#F5F3EE] min-h-screen selection:bg-[#C8A96B] selection:text-[#0F4A46]">
       <GlobalStyles />
+      <ScrollProgress />
       <Navbar />
       <main>
         <Hero />
